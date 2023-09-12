@@ -1,31 +1,46 @@
-package ru.practicum.service;
+package ru.practicum.stats_server.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.entity.EndpointHit;
-import ru.practicum.entity.ViewStats;
-import ru.practicum.repository.StatsRepository;
+import ru.practicum.dto.EndpointHitDto;
+import ru.practicum.dto.ViewStatsDto;
+import ru.practicum.stats_server.mappers.EndpointHitMapper;
+import ru.practicum.stats_server.mappers.ViewStatsMapper;
+import ru.practicum.stats_server.repositories.StatRepository;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Service
+@Slf4j
 @RequiredArgsConstructor
-public class StatsServiceImpl implements StatsService {
-
-    private final StatsRepository statsRepository;
+@Service
+public class StatServiceImpl implements StatService {
+    private final StatRepository statServerRepository;
+    private final EndpointHitMapper endpointHitMapper;
+    private final ViewStatsMapper viewStatsMapper;
 
     @Override
-    public EndpointHit createHit(EndpointHit endpointHit) {
-
-        return statsRepository.save(endpointHit);
+    public void saveHit(EndpointHitDto endpointHitDto) {
+        log.debug("Save hit by app: " + endpointHitDto.getApp());
+        statServerRepository.save(endpointHitMapper.toEntity(endpointHitDto));
     }
 
     @Override
-    public List<ViewStats> getStats(Timestamp start, Timestamp end, List<String> uris, boolean unique) {
-        if (Boolean.TRUE.equals(unique)) {
-            statsRepository.findStatsByDatesUniqueIp(start, end, uris);
+    public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+        if (unique) {
+            if (uris == null || uris.size() == 0) {
+                return statServerRepository.findDistinctViewsAll(start, end).stream().map(viewStatsMapper::toViewStatsDto).collect(Collectors.toList());
+            } else {
+                return statServerRepository.findDistinctViews(start, end, uris).stream().map(viewStatsMapper::toViewStatsDto).collect(Collectors.toList());
+            }
+        } else {
+            if (uris == null || uris.size() == 0) {
+                return statServerRepository.findViewsAll(start, end).stream().map(viewStatsMapper::toViewStatsDto).collect(Collectors.toList());
+            } else {
+                return statServerRepository.findViews(start, end, uris).stream().map(viewStatsMapper::toViewStatsDto).collect(Collectors.toList());
+            }
         }
-        return statsRepository.findStatsByDates(start, end, uris);
     }
 }

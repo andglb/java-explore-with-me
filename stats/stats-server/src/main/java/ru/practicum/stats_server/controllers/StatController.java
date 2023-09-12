@@ -1,54 +1,42 @@
-package ru.practicum.controller;
+package ru.practicum.stats_server.controllers;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.dto.EndpointHitRequestDto;
-import ru.practicum.dto.EndpointHitResponseDto;
-import ru.practicum.dto.ViewStatsResponseDto;
-import ru.practicum.mapper.StatsMapper;
-import ru.practicum.service.StatsService;
+import ru.practicum.dto.EndpointHitDto;
+import ru.practicum.dto.ViewStatsDto;
+import ru.practicum.stats_server.services.StatService;
 
-import javax.validation.Valid;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
+import static ru.practicum.stats_server.util.Constants.DATE;
+
+
 @RestController
-@Validated
 @RequiredArgsConstructor
-@Slf4j
-public class StatsController {
+public class StatController {
+    private final StatService statService;
 
-    private final StatsService statsService;
-    private final StatsMapper statsMapper;
-
-    /**
-     * Создаёт EndpointHit сохраняя информацию о запросе
-     */
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    public EndpointHitResponseDto create(@RequestBody @Valid EndpointHitRequestDto endpointHitRequestDto) {
-        log.info("POST EndpointHit {}", endpointHitRequestDto);
-        return statsMapper.toEndpointHitResponseDto(statsService.createHit(statsMapper.toEndpointHit(endpointHitRequestDto)));
+    public void saveHit(@RequestBody EndpointHitDto endpointHitDto) {
+        statService.saveHit(endpointHitDto);
     }
 
-    /**
-     * Возвращает статистику по посещениям в интервале дат, по списку uri
-     */
     @GetMapping("/stats")
-    public List<ViewStatsResponseDto> getStats(
-            @RequestParam Timestamp start,
-            @RequestParam Timestamp end,
-            @RequestParam List<String> uris,
-            @RequestParam(defaultValue = "false") boolean unique) {
-        log.info("GET stats start={}, end={}, uris={}, unique={}", start, end, uris, unique);
-        return statsMapper.toListViewStatsResponseDto(statsService.getStats(start, end, uris, unique));
+    public List<ViewStatsDto> getStats(@DateTimeFormat(pattern = DATE)
+                                       @RequestParam(value = "start") LocalDateTime start,
+                                       @DateTimeFormat(pattern = DATE)
+                                       @RequestParam(value = "end") LocalDateTime end,
+                                       @RequestParam(required = false) List<String> uris,
+                                       @RequestParam(required = false, defaultValue = "false") Boolean unique) {
+        return statService.getStats(start, end, uris, unique);
     }
 }

@@ -1,4 +1,4 @@
-package ru.practicum.stats_server.stats_client;
+package ru.practicum.stats_client;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

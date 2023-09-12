@@ -1,4 +1,4 @@
-package ru.practicum.stats_server.main_service;
+package ru.practicum.main_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
