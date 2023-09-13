@@ -30,13 +30,13 @@ public class StatServiceImpl implements StatService {
     @Override
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
         if (unique) {
-            if (uris == null || uris.size() == 0) {
+            if (uris == null || uris.isEmpty()) {
                 return statServerRepository.findDistinctViewsAll(start, end).stream().map(viewStatsMapper::toViewStatsDto).collect(Collectors.toList());
             } else {
                 return statServerRepository.findDistinctViews(start, end, uris).stream().map(viewStatsMapper::toViewStatsDto).collect(Collectors.toList());
             }
         } else {
-            if (uris == null || uris.size() == 0) {
+            if (uris == null || uris.isEmpty()) {
                 return statServerRepository.findViewsAll(start, end).stream().map(viewStatsMapper::toViewStatsDto).collect(Collectors.toList());
             } else {
                 return statServerRepository.findViews(start, end, uris).stream().map(viewStatsMapper::toViewStatsDto).collect(Collectors.toList());

@@ -22,10 +22,12 @@ import java.util.Map;
 public class StatClient {
     private final String serverUrl;
     private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
 
-    public StatClient(@Value("${stats-server.url}") String serverUrl, RestTemplate restTemplate) {
+    public StatClient(@Value("${stats-server.url}") String serverUrl, RestTemplate restTemplate, ObjectMapper objectMapper) {
         this.serverUrl = serverUrl;
         this.restTemplate = restTemplate;
+        this.objectMapper = objectMapper;
     }
 
     public void addStats(EndpointHitDto endpointHitDto) {
@@ -48,8 +50,6 @@ public class StatClient {
         ResponseEntity<String> response = restTemplate.getForEntity(
                 serverUrl + "/stats?start={start}&end={end}&uris={uris}&unique={unique}",
                 String.class, parameters);
-
-        ObjectMapper objectMapper = new ObjectMapper();
 
         try {
             return Arrays.asList(objectMapper.readValue(response.getBody(), ViewStatsDto[].class));
