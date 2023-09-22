@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
-import ru.practicum.main_service.exceptions.WrongTimeException;
+import ru.practicum.stats_server.exceptions.WrongTimeException;
 import ru.practicum.stats_server.mappers.EndpointHitMapper;
 import ru.practicum.stats_server.mappers.ViewStatsMapper;
 import ru.practicum.stats_server.repositories.StatRepository;
