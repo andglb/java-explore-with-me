@@ -13,6 +13,7 @@ import static ru.practicum.stats_server.util.Constants.DATE;
 
 public class ErrorHandler {
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DATE);
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
