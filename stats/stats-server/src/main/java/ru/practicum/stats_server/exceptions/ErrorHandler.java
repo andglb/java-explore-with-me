@@ -4,8 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import ru.practicum.main_service.entity.ApiError;
-import ru.practicum.main_service.exceptions.WrongTimeException;
+import ru.practicum.stats_server.enity.ApiError;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
