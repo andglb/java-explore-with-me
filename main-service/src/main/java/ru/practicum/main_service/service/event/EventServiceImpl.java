@@ -19,6 +19,7 @@ import ru.practicum.main_service.enums.StateActionForAdmin;
 import ru.practicum.main_service.enums.StateActionForUser;
 import ru.practicum.main_service.exceptions.*;
 import ru.practicum.main_service.mapper.EventMapper;
+import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.main_service.repository.CategoryRepository;
 import ru.practicum.main_service.repository.EventRepository;
 import ru.practicum.main_service.repository.UserRepository;
@@ -333,7 +334,6 @@ public class EventServiceImpl implements EventService {
         if (events.size() == 0) {
             return new ArrayList<>();
         }
-
         setView(events);
         statisticsService.sendStat(events, request);
         return eventMapper.toEventFullDtoList(events);
@@ -362,7 +362,7 @@ public class EventServiceImpl implements EventService {
             uri = "/events/" + event.getId();
             uris.add(uri);
             eventsUri.put(uri, event);
-            event.setViews(0L);
+            event.setViews(1L);
         }
 
         String startTime = start.format(DateTimeFormatter.ofPattern(DATE));
