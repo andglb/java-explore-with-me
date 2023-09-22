@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
+import ru.practicum.main_service.exceptions.WrongTimeException;
 import ru.practicum.stats_server.mappers.EndpointHitMapper;
 import ru.practicum.stats_server.mappers.ViewStatsMapper;
 import ru.practicum.stats_server.repositories.StatRepository;
@@ -29,6 +30,14 @@ public class StatServiceImpl implements StatService {
 
     @Override
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+        if (start != null && end != null) {
+            if (start.isAfter(end)) {
+                // Обработка ошибки - начальная дата больше конечной даты
+                throw new WrongTimeException("Invalid date range.");
+            }
+        } else if (start != null || end != null) {
+            throw new WrongTimeException("Invalid date range.");
+        }
         if (unique) {
             if (uris == null || uris.isEmpty()) {
                 return statServerRepository.findDistinctViewsAll(start, end).stream().map(viewStatsMapper::toViewStatsDto).collect(Collectors.toList());
