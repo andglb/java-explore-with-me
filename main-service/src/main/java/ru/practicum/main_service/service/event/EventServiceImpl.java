@@ -362,7 +362,7 @@ public class EventServiceImpl implements EventService {
             uri = "/events/" + event.getId();
             uris.add(uri);
             eventsUri.put(uri, event);
-            event.setViews(1L);
+            event.setViews(0L);
         }
 
         String startTime = start.format(DateTimeFormatter.ofPattern(DATE));
@@ -370,6 +370,6 @@ public class EventServiceImpl implements EventService {
 
         List<ViewStatsDto> stats = statisticsService.getStats(startTime, endTime, uris);
         stats.forEach((stat) ->
-                eventsUri.get(stat.getUri()).setViews(stat.getHits()));
+                eventsUri.get(stat.getUri()).setViews(stat.getHits() + 1));
     }
 }
