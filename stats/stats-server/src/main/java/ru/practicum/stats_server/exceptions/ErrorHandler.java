@@ -9,7 +9,7 @@ import ru.practicum.stats_server.enity.ApiError;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static ru.practicum.main_service.util.Constants.DATE;
+import static ru.practicum.stats_server.util.Constants.DATE;
 
 public class ErrorHandler {
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(DATE);
