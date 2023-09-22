@@ -345,7 +345,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new EventNotExistException(String.format("Can't find event with id = %s event doesn't exist", id)));
         statisticsService.setView(event);
         statisticsService.sendStat(event, request);
-        event.setViews(event.getViews()+1);
+        event.setViews(event.getViews() + 1);
         return eventMapper.toEventFullDto(event);
     }
 
