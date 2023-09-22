@@ -355,6 +355,7 @@ public class EventServiceImpl implements EventService {
         List<String> uris = new ArrayList<>();
         Map<String, Event> eventsUri = new HashMap<>();
         String uri = "";
+
         for (Event event : events) {
             if (start.isBefore(event.getCreatedOn())) {
                 start = event.getCreatedOn();
@@ -362,14 +363,21 @@ public class EventServiceImpl implements EventService {
             uri = "/events/" + event.getId();
             uris.add(uri);
             eventsUri.put(uri, event);
-            event.setViews(0L);
         }
 
         String startTime = start.format(DateTimeFormatter.ofPattern(DATE));
         String endTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DATE));
 
         List<ViewStatsDto> stats = statisticsService.getStats(startTime, endTime, uris);
-        stats.forEach((stat) ->
-                eventsUri.get(stat.getUri()).setViews(stat.getHits() + 1));
+
+        for (ViewStatsDto stat : stats) {
+            String statUri = stat.getUri();
+            Event event = eventsUri.get(statUri);
+            if (event != null) {
+                long currentViews = event.getViews();
+                long newViews = currentViews + stat.getHits();
+                event.setViews(newViews);
+            }
+        }
     }
 }
