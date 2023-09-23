@@ -50,6 +50,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         requestDto.setApp(nameService);
         requestDto.setIp(request.getRemoteAddr());
         sendStatForEveryEvent(events, remoteAddr, LocalDateTime.now(), nameService);
+        sendStat(events.get(0), request);
         statClient.addStats(requestDto);
     }
 
