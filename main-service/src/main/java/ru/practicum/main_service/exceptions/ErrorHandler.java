@@ -140,11 +140,11 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     public ApiError handleCompilationNotExistException(final CompilationNotExistException exception) {
         return new ApiError("Can't delete user with this id", "User with this id doesn't exist",
-                HttpStatus.CONFLICT.getReasonPhrase().toUpperCase(), LocalDateTime.now().format(dateFormatter));
+                HttpStatus.NOT_FOUND.getReasonPhrase().toUpperCase(), LocalDateTime.now().format(dateFormatter));
     }
 
     @ExceptionHandler
