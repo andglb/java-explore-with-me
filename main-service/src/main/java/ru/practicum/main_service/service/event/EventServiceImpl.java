@@ -329,11 +329,11 @@ public class EventServiceImpl implements EventService {
             }
         }
         statisticsService.sendStat(events, request);
+        getEvent(events.get(0).getId(), request);
         if (events.size() == 0) {
             return new ArrayList<>();
         }
         setView(events);
-        events.get(0).setViews(events.get(0).getViews() + 1);
         return eventMapper.toEventFullDtoList(events);
     }
 
