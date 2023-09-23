@@ -259,12 +259,6 @@ public class EventServiceImpl implements EventService {
         LocalDateTime start = rangeStart != null ? LocalDateTime.parse(rangeStart, dateFormatter) : null;
         LocalDateTime end = rangeEnd != null ? LocalDateTime.parse(rangeEnd, dateFormatter) : null;
 
-        if (rangeStart != null && rangeEnd != null) {
-            if (start.isAfter(end)) {
-                // Обработка ошибки - начальная дата больше конечной даты
-                throw new WrongTimeException("Invalid date range.");
-            }
-        }
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> query = builder.createQuery(Event.class);
 
@@ -304,10 +298,6 @@ public class EventServiceImpl implements EventService {
             Predicate lessTime = builder.lessThanOrEqualTo(root.get("eventDate").as(LocalDateTime.class), end);
             criteria = builder.and(criteria, lessTime);
         }
-        if (categories.isEmpty()) {
-            // Обработка ошибки - список категорий пуст
-            throw new IllegalArgumentException("Categories list must not be empty.");
-        }
 
         query.select(root).where(criteria).orderBy(builder.asc(root.get("eventDate")));
         List<Event> events = entityManager.createQuery(query)
@@ -330,7 +320,17 @@ public class EventServiceImpl implements EventService {
         }
         statisticsService.sendStat(events, request);
         for (Event event : events) {
-            getEvent(event.getId(), request);
+            statisticsService.setView(event);
+        }
+        if (categories.isEmpty()) {
+            // Обработка ошибки - список категорий пуст
+            throw new IllegalArgumentException("Categories list must not be empty.");
+        }
+        if (rangeStart != null && rangeEnd != null) {
+            if (start.isAfter(end)) {
+                // Обработка ошибки - начальная дата больше конечной даты
+                throw new WrongTimeException("Invalid date range.");
+            }
         }
         if (events.size() == 0) {
             return new ArrayList<>();
