@@ -335,7 +335,6 @@ public class EventServiceImpl implements EventService {
         }
         setView(events);
         statisticsService.sendStat(events, request);
-        statisticsService.sendStat(events, request);
         return eventMapper.toEventFullDtoList(events);
     }
 
