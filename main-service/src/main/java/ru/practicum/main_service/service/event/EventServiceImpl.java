@@ -330,6 +330,7 @@ public class EventServiceImpl implements EventService {
         }
         for (Event event : events) {
             statisticsService.sendStat(events, request);
+            statisticsService.sendStat(events, request);
             statisticsService.setView(event);
         }
         if (events.size() == 0) {
