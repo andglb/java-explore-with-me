@@ -265,7 +265,6 @@ public class EventServiceImpl implements EventService {
                 throw new WrongTimeException("Invalid date range.");
             }
         }
-
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> query = builder.createQuery(Event.class);
 
@@ -329,12 +328,11 @@ public class EventServiceImpl implements EventService {
                 events = events.stream().sorted(Comparator.comparing(Event::getViews)).collect(Collectors.toList());
             }
         }
-
+        statisticsService.sendStat(events, request);
         if (events.size() == 0) {
             return new ArrayList<>();
         }
         setView(events);
-        statisticsService.sendStat(events, request);
         return eventMapper.toEventFullDtoList(events);
     }
 
