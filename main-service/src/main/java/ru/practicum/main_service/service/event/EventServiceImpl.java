@@ -19,7 +19,6 @@ import ru.practicum.main_service.enums.StateActionForAdmin;
 import ru.practicum.main_service.enums.StateActionForUser;
 import ru.practicum.main_service.exceptions.*;
 import ru.practicum.main_service.mapper.EventMapper;
-import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.main_service.repository.CategoryRepository;
 import ru.practicum.main_service.repository.EventRepository;
 import ru.practicum.main_service.repository.UserRepository;
