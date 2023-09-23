@@ -329,7 +329,9 @@ public class EventServiceImpl implements EventService {
             }
         }
         statisticsService.sendStat(events, request);
-        getEvent(events.get(0).getId(), request);
+        for (Event event : events) {
+            getEvent(event.getId(), request);
+        }
         if (events.size() == 0) {
             return new ArrayList<>();
         }
