@@ -332,7 +332,7 @@ public class EventServiceImpl implements EventService {
             return new ArrayList<>();
         }
         statisticsService.sendStat(events, request);
-        if (rangeStart != null && rangeEnd != null) {
+        if (start != null && end != null) {
             if (start.isAfter(end)) {
                 // Обработка ошибки - начальная дата больше конечной даты
                 throw new WrongTimeException("Invalid date range.");
