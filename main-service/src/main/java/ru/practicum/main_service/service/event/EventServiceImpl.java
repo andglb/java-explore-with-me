@@ -328,14 +328,10 @@ public class EventServiceImpl implements EventService {
                 events = events.stream().sorted(Comparator.comparing(Event::getViews)).collect(Collectors.toList());
             }
         }
-        for (Event event : events) {
-            statisticsService.sendStat(events, request);
-            statisticsService.sendStat(events, request);
-            statisticsService.setView(event);
-        }
         if (events.size() == 0) {
             return new ArrayList<>();
         }
+        statisticsService.sendStat(events, request);
         setView(events);
         return eventMapper.toEventFullDtoList(events);
     }
