@@ -328,9 +328,9 @@ public class EventServiceImpl implements EventService {
                 events = events.stream().sorted(Comparator.comparing(Event::getViews)).collect(Collectors.toList());
             }
         }
-        statisticsService.sendStat(events, request);
         for (Event event : events) {
             statisticsService.setView(event);
+            statisticsService.sendStat(events, request);
         }
         if (events.size() == 0) {
             return new ArrayList<>();
