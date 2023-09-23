@@ -68,7 +68,6 @@ public class StatisticsServiceImpl implements StatisticsService {
     public void sendStatForEveryEvent(List<Event> events, String remoteAddr, LocalDateTime now,
                                       String nameService) {
         for (Event event : events) {
-            setView(event);
             EndpointHitDto requestDto = new EndpointHitDto();
             requestDto.setTimestamp(now.format(dateFormatter));
             requestDto.setUri("/events/" + event.getId());
