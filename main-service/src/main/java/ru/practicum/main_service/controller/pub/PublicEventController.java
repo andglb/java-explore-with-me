@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.main_service.dto.event.EventFullDto;
 import ru.practicum.main_service.enums.SortValue;
 import ru.practicum.main_service.service.event.EventService;
-import ru.practicum.main_service.service.statistics.StatisticsService;
-import ru.practicum.stats_client.StatClient;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -20,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PublicEventController {
     private final EventService eventService;
-    private final StatisticsService statisticsService;
 
     @GetMapping
     public List<EventFullDto> getEventsWithParamsByUser(@RequestParam(name = "text", required = false) String text,
