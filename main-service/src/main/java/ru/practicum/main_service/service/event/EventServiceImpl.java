@@ -259,12 +259,12 @@ public class EventServiceImpl implements EventService {
         LocalDateTime start = rangeStart != null ? LocalDateTime.parse(rangeStart, dateFormatter) : null;
         LocalDateTime end = rangeEnd != null ? LocalDateTime.parse(rangeEnd, dateFormatter) : null;
 
-/*        if (rangeStart != null && rangeEnd != null) {
+        if (rangeStart != null && rangeEnd != null) {
             if (start.isAfter(end)) {
                 // Обработка ошибки - начальная дата больше конечной даты
                 throw new WrongTimeException("Invalid date range.");
             }
-        }*/
+        }
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> query = builder.createQuery(Event.class);
 
@@ -332,15 +332,6 @@ public class EventServiceImpl implements EventService {
             return new ArrayList<>();
         }
         statisticsService.sendStat(events, request);
-        if (start != null && end != null) {
-            if (start.isAfter(end)) {
-                // Обработка ошибки - начальная дата больше конечной даты
-                throw new WrongTimeException("Invalid date range.");
-            }
-        }
-        if (start == null || end == null) {
-            throw new WrongTimeException("Invalid date range.");
-        }
         setView(events);
         return eventMapper.toEventFullDtoList(events);
     }
