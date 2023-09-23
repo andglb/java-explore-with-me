@@ -35,8 +35,6 @@ public class StatServiceImpl implements StatService {
                 // Обработка ошибки - начальная дата больше конечной даты
                 throw new WrongTimeException("Invalid date range.");
             }
-        } else if (start != null || end != null) {
-            throw new WrongTimeException("Invalid date range.");
         }
         if (unique) {
             if (uris == null || uris.isEmpty()) {
