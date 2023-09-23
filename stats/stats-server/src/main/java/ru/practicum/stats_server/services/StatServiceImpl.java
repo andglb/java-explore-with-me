@@ -30,11 +30,9 @@ public class StatServiceImpl implements StatService {
 
     @Override
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
-        if (start != null && end != null) {
-            if (start.isAfter(end)) {
-                // Обработка ошибки - начальная дата больше конечной даты
-                throw new WrongTimeException("Invalid date range.");
-            }
+        if (start.isAfter(end)) {
+            // Обработка ошибки - начальная дата больше конечной даты
+            throw new WrongTimeException("Invalid date range.");
         }
         if (unique) {
             if (uris == null || uris.isEmpty()) {
