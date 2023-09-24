@@ -49,8 +49,8 @@ public class StatisticsServiceImpl implements StatisticsService {
         requestDto.setUri("/events");
         requestDto.setApp(nameService);
         requestDto.setIp(request.getRemoteAddr());
-        sendStatForEveryEvent(events, remoteAddr, LocalDateTime.now(), nameService);
         statClient.addStats(requestDto);
+        sendStatForEveryEvent(events, remoteAddr, LocalDateTime.now(), nameService);
     }
 
     @Override

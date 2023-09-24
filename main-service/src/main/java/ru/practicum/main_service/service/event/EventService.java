@@ -10,6 +10,7 @@ import ru.practicum.main_service.enums.EventState;
 import ru.practicum.main_service.enums.SortValue;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventService {
@@ -26,8 +27,8 @@ public interface EventService {
     List<EventFullDto> getEventsWithParamsByAdmin(List<Long> users, EventState states, List<Long> categoriesId,
                                                   String rangeStart, String rangeEnd, Integer from, Integer size);
 
-    List<EventFullDto> getEventsWithParamsByUser(String text, List<Long> categories, Boolean paid, String rangeStart,
-                                                 String rangeEnd, Boolean onlyAvailable, SortValue sort, Integer from,
+    List<EventFullDto> getEventsWithParamsByUser(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
+                                                 LocalDateTime rangeEnd, Boolean onlyAvailable, SortValue sort, Integer from,
                                                  Integer size, HttpServletRequest request);
 
     EventFullDto getEvent(Long id, HttpServletRequest request);

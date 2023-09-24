@@ -23,6 +23,7 @@ import ru.practicum.main_service.repository.CategoryRepository;
 import ru.practicum.main_service.repository.EventRepository;
 import ru.practicum.main_service.repository.UserRepository;
 import ru.practicum.main_service.service.statistics.StatisticsService;
+import ru.practicum.main_service.util.Constants;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -253,17 +254,18 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventFullDto> getEventsWithParamsByUser(String text, List<Long> categories, Boolean paid, String rangeStart,
-                                                        String rangeEnd, Boolean onlyAvailable, SortValue sort,
+    public List<EventFullDto> getEventsWithParamsByUser(String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart,
+                                                        LocalDateTime rangeEnd, Boolean onlyAvailable, SortValue sort,
                                                         Integer from, Integer size, HttpServletRequest request) {
-        LocalDateTime start = rangeStart != null ? LocalDateTime.parse(rangeStart, dateFormatter) : null;
-        LocalDateTime end = rangeEnd != null ? LocalDateTime.parse(rangeEnd, dateFormatter) : null;
-
-        if (rangeStart != null && rangeEnd != null) {
-            if (start.isAfter(end)) {
-                // Обработка ошибки - начальная дата больше конечной даты
-                throw new WrongTimeException("Invalid date range.");
-            }
+        if (rangeStart == null) {
+            rangeStart = LocalDateTime.now();
+            rangeEnd = Constants.MAX_DATE;
+        }
+        if (rangeEnd == null) {
+            rangeEnd = Constants.MAX_DATE;
+        }
+        if (rangeStart.isAfter(rangeEnd)) {
+            throw new WrongTimeException("Дата начало поиска не может быть после даты конца!");
         }
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> query = builder.createQuery(Event.class);
@@ -297,16 +299,12 @@ public class EventServiceImpl implements EventService {
         }
 
         if (rangeStart != null) {
-            Predicate greaterTime = builder.greaterThanOrEqualTo(root.get("eventDate").as(LocalDateTime.class), start);
+            Predicate greaterTime = builder.greaterThanOrEqualTo(root.get("eventDate").as(LocalDateTime.class), rangeStart);
             criteria = builder.and(criteria, greaterTime);
         }
         if (rangeEnd != null) {
-            Predicate lessTime = builder.lessThanOrEqualTo(root.get("eventDate").as(LocalDateTime.class), end);
+            Predicate lessTime = builder.lessThanOrEqualTo(root.get("eventDate").as(LocalDateTime.class), rangeEnd);
             criteria = builder.and(criteria, lessTime);
-        }
-        if (categories.isEmpty()) {
-            // Обработка ошибки - список категорий пуст
-            throw new IllegalArgumentException("Categories list must not be empty.");
         }
 
         query.select(root).where(criteria).orderBy(builder.asc(root.get("eventDate")));
@@ -328,11 +326,13 @@ public class EventServiceImpl implements EventService {
                 events = events.stream().sorted(Comparator.comparing(Event::getViews)).collect(Collectors.toList());
             }
         }
+
         if (events.size() == 0) {
             return new ArrayList<>();
         }
-        statisticsService.sendStat(events, request);
+
         setView(events);
+        statisticsService.sendStat(events, request);
         return eventMapper.toEventFullDtoList(events);
     }
 
