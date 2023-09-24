@@ -265,7 +265,7 @@ public class EventServiceImpl implements EventService {
             rangeEnd = Constants.MAX_DATE;
         }
         if (rangeStart.isAfter(rangeEnd)) {
-            throw new WrongTimeException("Дата начало поиска не может быть после даты конца!");
+            throw new WrongTimeException("The start date of the search cannot be after the end date!");
         }
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Event> query = builder.createQuery(Event.class);

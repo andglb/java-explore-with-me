@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -30,18 +31,19 @@ public class StatServiceImpl implements StatService {
 
     @Override
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
-        if (start.isAfter(end)) {
-            // Обработка ошибки - начальная дата больше конечной даты
-            throw new WrongTimeException("Invalid date range.");
+        if (start != null && end != null) {
+            if (start.isAfter(end)) {
+                throw new WrongTimeException("The start date of the search cannot be after the end date!");
+            }
         }
         if (unique) {
-            if (uris == null || uris.isEmpty()) {
+            if (uris == null || uris.size() == 0) {
                 return statServerRepository.findDistinctViewsAll(start, end).stream().map(viewStatsMapper::toViewStatsDto).collect(Collectors.toList());
             } else {
                 return statServerRepository.findDistinctViews(start, end, uris).stream().map(viewStatsMapper::toViewStatsDto).collect(Collectors.toList());
             }
         } else {
-            if (uris == null || uris.isEmpty()) {
+            if (uris == null || uris.size() == 0) {
                 return statServerRepository.findViewsAll(start, end).stream().map(viewStatsMapper::toViewStatsDto).collect(Collectors.toList());
             } else {
                 return statServerRepository.findViews(start, end, uris).stream().map(viewStatsMapper::toViewStatsDto).collect(Collectors.toList());

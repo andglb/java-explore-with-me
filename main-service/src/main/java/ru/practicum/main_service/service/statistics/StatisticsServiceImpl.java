@@ -2,9 +2,11 @@ package ru.practicum.main_service.service.statistics;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.yaml.snakeyaml.util.UriEncoder;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
 import ru.practicum.main_service.entity.Event;
+import ru.practicum.main_service.exceptions.WrongTimeException;
 import ru.practicum.stats_client.StatClient;
 
 import javax.servlet.http.HttpServletRequest;
@@ -93,6 +95,12 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     public List<ViewStatsDto> getStats(String startTime, String endTime, List<String> uris) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE);
+        LocalDateTime startDate = LocalDateTime.parse(UriEncoder.decode(startTime), formatter);
+        LocalDateTime endDate = LocalDateTime.parse(UriEncoder.decode(endTime), formatter);
+        if (startDate.isAfter(endDate)) {
+            throw new WrongTimeException("The start date of the search cannot be after the end date!");
+        }
         return statClient.getStats(startTime, endTime, uris, false);
     }
 }
