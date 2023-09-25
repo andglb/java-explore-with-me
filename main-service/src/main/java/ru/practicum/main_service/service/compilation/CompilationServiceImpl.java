@@ -42,12 +42,16 @@ public class CompilationServiceImpl implements CompilationService {
         if (newCompilationDto.getEvents() != null) {
             events = eventRepository.findAllByIdIn(newCompilationDto.getEvents());
         }
+
         Compilation compilation = new Compilation();
-        compilation.setEvents(new HashSet<>(events));
-        compilation.setPinned(newCompilationDto.getPinned());
+
         if (newCompilationDto.getPinned() == null) {
             compilation.setPinned(false);
+        } else {
+            compilation.setPinned(newCompilationDto.getPinned());
         }
+
+        compilation.setEvents(new HashSet<>(events));
         compilation.setTitle(newCompilationDto.getTitle());
 
         Compilation savedCompilation = compilationRepository.save(compilation);
@@ -55,6 +59,7 @@ public class CompilationServiceImpl implements CompilationService {
         setView(savedCompilation);
         return mapper.mapToCompilationDto(savedCompilation);
     }
+
 
     public CompilationDto getCompilation(Long compId) {
         Compilation compilation = compilationRepository.findById(compId)
@@ -92,34 +97,21 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     public CompilationDto updateCompilation(Long compId, UpdateCompilationRequest updateCompilationRequest) {
-        // Проверяем, существует ли компиляция с указанным compId
         Compilation oldCompilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new CompilationNotExistException("Can't update compilation - the compilation doesn't exist"));
-
-        // Проверяем, есть ли события для обновления
         if (updateCompilationRequest.getEvents() != null && !updateCompilationRequest.getEvents().isEmpty()) {
             List<Event> events = eventRepository.findAllByIdIn(updateCompilationRequest.getEvents());
             oldCompilation.setEvents(new HashSet<>(events));
         }
-
-        // Проверяем, есть ли значение для обновления поля pinned
         if (updateCompilationRequest.getPinned() != null) {
             oldCompilation.setPinned(updateCompilationRequest.getPinned());
         }
-
-        // Проверяем, есть ли значение для обновления поля title
         if (updateCompilationRequest.getTitle() != null) {
             oldCompilation.setTitle(updateCompilationRequest.getTitle());
         }
-
-        // Сохраняем обновленную компиляцию
         Compilation updatedCompilation = compilationRepository.save(oldCompilation);
         log.debug("Compilation with ID = {} is updated", compId);
-
-        // Вызываем метод setView для обновленной компиляции
         setView(updatedCompilation);
-
-        // Возвращаем DTO обновленной компиляции
         return mapper.mapToCompilationDto(updatedCompilation);
     }
 

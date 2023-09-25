@@ -42,15 +42,13 @@ public class RequestServiceImpl implements RequestService {
         return requestMapper.toRequestDtoList(requestRepository.findAllByEventWithInitiator(userId, eventId));
     }
 
-    @Override
     public RequestDto createRequest(Long userId, Long eventId) {
         if (requestRepository.existsByRequesterAndEvent(userId, eventId)) {
             throw new RequestAlreadyExistException("Request already exists");
         }
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotExistException("Event doesnt exist"));
-        if (event.getInitiator().getId().equals(userId)) {
-            throw new WrongUserException("Can't create request by initiator");
-        }
+
+        Event event = getEventById(eventId);
+        validateRequesterAndEvent(event, userId);
 
         if (event.getPublishedOn() == null) {
             throw new EventIsNotPublishedException("Event is not published yet");
@@ -59,19 +57,33 @@ public class RequestServiceImpl implements RequestService {
         List<Request> requests = requestRepository.findAllByEvent(eventId);
 
         if (!event.getRequestModeration() && requests.size() >= event.getParticipantLimit()) {
-            throw new ParticipantLimitException("Member limit exceeded ");
+            throw new ParticipantLimitException("Member limit exceeded");
         }
 
+        Request request = createNewRequest(eventId, userId, event);
+        return requestMapper.toRequestDto(requestRepository.save(request));
+    }
+
+    private Event getEventById(Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new EventNotExistException("Event doesn't exist"));
+    }
+
+    private void validateRequesterAndEvent(Event event, Long userId) {
+        if (event.getInitiator().getId().equals(userId)) {
+            throw new WrongUserException("Can't create request by initiator");
+        }
+    }
+
+    private Request createNewRequest(Long eventId, Long userId, Event event) {
         Request request = new Request();
         request.setCreated(LocalDateTime.now());
         request.setEvent(eventId);
         request.setRequester(userId);
-        request.setStatus(RequestStatus.PENDING);
-        if (event.getParticipantLimit() == 0) {
-            request.setStatus(RequestStatus.CONFIRMED);
-        }
-        return requestMapper.toRequestDto(requestRepository.save(request));
+        request.setStatus(event.getParticipantLimit() == 0 ? RequestStatus.CONFIRMED : RequestStatus.PENDING);
+        return request;
     }
+
 
     @Transactional
     @Override

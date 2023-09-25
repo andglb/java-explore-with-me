@@ -60,8 +60,6 @@ public class CategoryServiceImpl implements CategoryService {
         String newName = categoryDto.getName();
 
         if (!newName.equals(category.getName())) {
-            // Имя в объекте categoryDto отличается от текущего имени в базе данных,
-            // поэтому нужно проверить, не существует ли уже такого имени в базе.
             if (categoryRepository.existsByName(newName)) {
                 throw new NameAlreadyExistException(String.format("Can't update category because name: %s already used by another category", newName));
             }
