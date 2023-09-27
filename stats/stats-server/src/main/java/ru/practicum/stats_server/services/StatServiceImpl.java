@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.ViewStatsDto;
+import ru.practicum.stats_server.exceptions.WrongTimeException;
 import ru.practicum.stats_server.mappers.EndpointHitMapper;
 import ru.practicum.stats_server.mappers.ViewStatsMapper;
 import ru.practicum.stats_server.repositories.StatRepository;
@@ -12,6 +13,7 @@ import ru.practicum.stats_server.repositories.StatRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -29,14 +31,19 @@ public class StatServiceImpl implements StatService {
 
     @Override
     public List<ViewStatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+        if (start != null && end != null) {
+            if (start.isAfter(end)) {
+                throw new WrongTimeException("The start date of the search cannot be after the end date!");
+            }
+        }
         if (unique) {
-            if (uris == null || uris.isEmpty()) {
+            if (uris == null || uris.size() == 0) {
                 return statServerRepository.findDistinctViewsAll(start, end).stream().map(viewStatsMapper::toViewStatsDto).collect(Collectors.toList());
             } else {
                 return statServerRepository.findDistinctViews(start, end, uris).stream().map(viewStatsMapper::toViewStatsDto).collect(Collectors.toList());
             }
         } else {
-            if (uris == null || uris.isEmpty()) {
+            if (uris == null || uris.size() == 0) {
                 return statServerRepository.findViewsAll(start, end).stream().map(viewStatsMapper::toViewStatsDto).collect(Collectors.toList());
             } else {
                 return statServerRepository.findViews(start, end, uris).stream().map(viewStatsMapper::toViewStatsDto).collect(Collectors.toList());
